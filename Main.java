@@ -1,7 +1,10 @@
 import javax.swing.*;
-import javax.swing.table.JTableHeader;
 import java.awt.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 public class Main {
     public static void main(String[] args) {
@@ -10,48 +13,90 @@ public class Main {
 
         swing1.setBounds(250,70,1600,900);
         swing1.setTitle("Probando la librería Swing en Java");
-        //Bloqueamos redimensionamiento para evitar errores
-        swing1.setResizable(false); 
-
+        swing1.setResizable(false);
         swing1.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-        //Menú
-        JMenuBar Menu = new JMenuBar();
+        // Menú
+        JMenuBar menuBar = new JMenuBar();
 
         JMenu menuArchivo = new JMenu("Archivo");
         JMenu menuAcciones = new JMenu("Acciones");
         JMenu menuAyuda = new JMenu("Ayuda");
-        Menu.setBounds(20,20,170,40);
-        Menu.add(menuArchivo);
-        Menu.add(menuAcciones);
-        Menu.add(menuAyuda);
+        JMenu menuCatalogo = new JMenu("Catalogo");
+
+        JMenuItem menuItemVersion = new JMenuItem("Versión");
+        JMenuItem menuItemAcercaDe = new JMenuItem("Acerca de");
+
+        menuItemVersion.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Versión del programa: 1.0");
+            }
+        });
+
+        menuItemAcercaDe.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Este programa realiza simulaciones de ligas deportivas.");
+            }
+        });
+
+        menuAyuda.add(menuItemVersion);
+        menuAyuda.add(menuItemAcercaDe);
+
+        menuBar.add(menuArchivo);
+        menuBar.add(menuAcciones);
+        menuBar.add(menuAyuda);
+        menuBar.add(menuCatalogo);
 
         //Botones
-
         Button NuevaLiga = new Button();
         NuevaLiga.setLabel("Nueva Liga");
-        NuevaLiga.setBounds(20,120,180,50);
+        NuevaLiga.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Creando una nueva liga");
+            }
+        });
 
         Button JugarLiga = new Button();
         JugarLiga.setLabel("Jugar Liga");
-        JugarLiga.setBounds(20,220,180,50);
+        JugarLiga.addMouseListener(new MouseListener() {
+            public void mouseClicked(MouseEvent e) {
+                // No se implementa en este caso
+            }
+            public void mousePressed(MouseEvent e) {
+                // No se implementa en este caso
+            }
+            public void mouseReleased(MouseEvent e) {
+                // No se implementa en este caso
+            }
+            public void mouseEntered(MouseEvent e) {
+                System.out.println("Al hacer click en este botón se simulará una liga al completo");
+            }
+            public void mouseExited(MouseEvent e) {
+                // No se implementa en este caso
+            }
+        });
 
         Button SiguienteJornada = new Button();
         SiguienteJornada.setLabel("Siguiente jornada");
-        SiguienteJornada.setBounds(20,320,180,50);
-        SiguienteJornada.setEnabled(false);
+        SiguienteJornada.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, "Se va a proceder a simular una jornada");
+            }
+        });
 
         Button SimulacionCompleta = new Button();
         SimulacionCompleta.setLabel("Simulación completa");
-        SimulacionCompleta.setBounds(20,420,180,50);
         SimulacionCompleta.setEnabled(false);
 
         Button Salir = new Button();
         Salir.setLabel("Salir");
-        Salir.setBounds(20,670,180,50);
+        Salir.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
 
         //Tabla
-
         String[] campos = {"Nombre", "P. Jugados", "Victorias", "Empates", "Derrotas", "Puntos"};
 
         Object[][] datos = {
@@ -60,15 +105,26 @@ public class Main {
                 {"Equipo3", "5", "3", "0", "2", "9"},
                 {"Equipo4", "5", "2", "0", "3", "6"},
                 {"Equipo5", "5", "1", "0", "4", "3"},
-                {"Equipo6", "5", "0", "0", "5", "0"}};
+                {"Equipo6", "5", "0", "0", "5", "0"}
+        };
 
         JTable tabla = new JTable(datos, campos);
-        tabla.setBounds(500, 120, 600, 600);
         tabla.setRowHeight(100);
 
-        JTableHeader cabecera = tabla.getTableHeader();
-        cabecera.setBounds(500,80,600,40);
-        tabla.setTableHeader(cabecera);   
+        // Panel para los botones
+        JPanel panelBotones = new JPanel();
+        panelBotones.setLayout(new GridLayout(4, 1, 0, 10));
+        panelBotones.add(NuevaLiga);
+        panelBotones.add(JugarLiga);
+        panelBotones.add(SiguienteJornada);
+        panelBotones.add(SimulacionCompleta);
+
+        // Panel principal con BorderLayout
+        JPanel panelPrincipal = new JPanel(new BorderLayout());
+        panelPrincipal.add(menuBar, BorderLayout.NORTH);
+        panelPrincipal.add(panelBotones, BorderLayout.WEST);
+        panelPrincipal.add(new JScrollPane(tabla), BorderLayout.CENTER);
+        panelPrincipal.add(Salir, BorderLayout.SOUTH);
 
         // Centramos los datos de la tabla
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -76,21 +132,8 @@ public class Main {
         for (int i = 0; i < tabla.getColumnCount(); i++) {
             tabla.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
-        
-        // Eliminamos el layout por defecto para poder especificar nosotros mismos las coordenadas
 
-        swing1.setLayout(null);
-
-        //Elementos empleados
-
-        swing1.add(Menu);
-        swing1.add(NuevaLiga);
-        swing1.add(JugarLiga);
-        swing1.add(SiguienteJornada);
-        swing1.add(SimulacionCompleta);
-        swing1.add(Salir);
-        swing1.add(tabla);
-        swing1.add(tabla.getTableHeader());
+        swing1.add(panelPrincipal);
         swing1.setVisible(true);
     }
 }
